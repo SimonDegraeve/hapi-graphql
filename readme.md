@@ -29,6 +29,13 @@ server.register({
       rootValue: {},
       pretty: false
     },
+    // OR
+    //
+    // query: (request) => {{
+    //   schema: TestSchema,
+    //   rootValue: {},
+    //   pretty: false
+    // }),
     route: {
       path: '/graphql',
       config: {}
