@@ -1,0 +1,39 @@
+{
+  "name": "hapi-graphql",
+  "version": "0.2.0",
+  "description": "Create a GraphQL HTTP server with Hapi.",
+  "author": "Simon Degraeve <simon.degraeve@gmail.com>",
+  "main": "./lib/index.js",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SimonDegraeve/hapi-graphql/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/SimonDegraeve/hapi-graphql.git"
+  },
+  "keywords": [
+    "hapi",
+    "graphql"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prebublish": "babel src --out-dir lib"
+  },
+  "devDependencies": {
+    "babel": "^5.8.21",
+    "babel-eslint": "^4.0.5",
+    "eslint": "^1.1.0",
+    "eslint-plugin-babel": "^2.0.0",
+    "graphql": "^0.4.2",
+    "hapi": "^9.0.1"
+  },
+  "dependencies": {
+    "babel-runtime": "^5.8.20",
+    "boom": "^2.8.0",
+    "joi": "^6.6.1"
+  },
+  "peerDependencies": {
+    "graphql": "~0.4.2"
+  }
+}
