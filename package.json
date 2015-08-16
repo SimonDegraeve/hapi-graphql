@@ -22,11 +22,11 @@
   },
   "devDependencies": {
     "babel": "^5.8.21",
-    "babel-eslint": "^4.0.5",
+    "babel-eslint": "^4.0.7",
     "eslint": "^1.1.0",
-    "eslint-plugin-babel": "^2.0.0",
+    "eslint-plugin-babel": "^2.1.0",
     "graphql": "^0.4.2",
-    "hapi": "^9.0.1"
+    "hapi": "^9.0.2"
   },
   "dependencies": {
     "babel-runtime": "^5.8.20",
