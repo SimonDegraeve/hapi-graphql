@@ -134,8 +134,7 @@ const handler = (route, options = {}) => async (request, reply) => {
 
     // Return result
     return reply(result)
-      .status(result.hasOwnProperty('data') ? 200 : 400)
-      .type('text/json');
+      .status(result.hasOwnProperty('data') ? 200 : 400);
   }
   catch (error) {
     // Return error
