@@ -182,6 +182,22 @@ function register(server, options = {}, next) {
     }
   });
 
+  // Fix error when browser is trying to prefly the CORS request
+  // and sends an OPTIONS request
+  if (typeof route.config.cors !== 'undefined') {
+    server.route({
+      method: ['options'],
+      path: route.path,
+      config: {
+        auth: false,
+        cors: route.config.cors
+      },
+      handler: function (request, reply) {
+        return reply();
+      }
+    });
+  }
+
   // Done
   return next();
 }
