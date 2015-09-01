@@ -184,7 +184,7 @@ function register(server, options = {}, next) {
 
   // Fix error when browser is trying to prefly the CORS request
   // and sends an OPTIONS request
-  if (typeof route.config.cors !== 'undefined') {
+  if (route.config && typeof route.config.cors !== 'undefined') {
     server.route({
       method: ['options'],
       path: route.path,
@@ -192,7 +192,7 @@ function register(server, options = {}, next) {
         auth: false,
         cors: route.config.cors
       },
-      handler: function (request, reply) {
+      handler(request, reply) {
         return reply();
       }
     });
