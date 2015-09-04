@@ -6,6 +6,7 @@ import Boom from 'boom';
 import {Stream} from 'stream';
 import {graphql} from 'graphql';
 import {formatError} from 'graphql/error';
+import {version} from '../package.json';
 
 
 /**
@@ -206,10 +207,7 @@ function register(server, options = {}, next) {
 /**
  * Define plugin attributes
  */
-register.attributes = {
-  name: 'graphql',
-  version: '0.2.0'
-};
+register.attributes = {name: 'graphql', version};
 
 
 /**
