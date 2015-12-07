@@ -166,7 +166,7 @@ function register(server, options = {}, next) {
   // Validate options
   const validation = Joi.validate(options, optionsSchema);
   if (validation.error) {
-    throw validation.error;
+    return next(validation.error);
   }
   const {route, query} = validation.value;
 

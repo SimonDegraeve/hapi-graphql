@@ -17,7 +17,7 @@
     "graphql"
   ],
   "scripts": {
-    "test": "lab -T node_modules/lab-babel -t 100 -S -I $npm_package_config_lab_globals",
+    "test": "lab -T node_modules/lab-babel -S -I $npm_package_config_lab_globals",
     "compile": "babel -d lib/ src/",
     "prepublish": "npm run compile"
   },
