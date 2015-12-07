@@ -18,6 +18,7 @@
   ],
   "scripts": {
     "test": "lab -T node_modules/lab-babel -S -I $npm_package_config_lab_globals",
+    "cover": "lab -T node_modules/lab-babel -s -r lcov | coveralls",
     "compile": "babel -d lib/ src/",
     "prepublish": "npm run compile"
   },
@@ -30,6 +31,7 @@
     "babel-preset-stage-0": "^6.3.13",
     "boom": "^3.0.0",
     "code": "^2.0.1",
+    "coveralls": "^2.11.4",
     "eslint": "^1.10.3",
     "eslint-plugin-babel": "^3.0.0",
     "graphql": "^0.4.14",
