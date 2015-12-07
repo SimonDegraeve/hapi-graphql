@@ -1,9 +1,15 @@
 # GraphQL Hapi Plugin
 
+[![NPM Version](https://img.shields.io/npm/v/hapi-graphql.svg)](https://npmjs.org/package/hapi-graphql)
+[![Build Status](https://secure.travis-ci.org/SimonDegraeve/hapi-graphql.png)](http://travis-ci.org/SimonDegraeve/hapi-graphql)
+[![Coverage Status](https://coveralls.io/repos/SimonDegraeve/hapi-graphql/badge.svg?branch=master&service=github)](https://coveralls.io/github/SimonDegraeve/hapi-graphql?branch=master)
+[![Dependency Status](https://david-dm.org/SimonDegraeve/hapi-graphql.svg)](https://david-dm.org/SimonDegraeve/hapi-graphql)
+[![bitHound Overalll Score](https://www.bithound.io/github/SimonDegraeve/hapi-graphql/badges/score.svg)](https://www.bithound.io/github/SimonDegraeve/hapi-graphql)
+
 Create a GraphQL HTTP server with [Hapi](http://hapijs.com).
 Port from [express-graphql](https://github.com/graphql/express-graphql).
 
-```js
+```sh
 npm install --save hapi-graphql
 ```
 
