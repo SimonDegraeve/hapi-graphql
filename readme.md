@@ -31,7 +31,7 @@ server.register({
     },
     // OR
     //
-    // query: (request) => {{
+    // query: (request) => ({
     //   schema: TestSchema,
     //   rootValue: {},
     //   pretty: false
