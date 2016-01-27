@@ -162,7 +162,6 @@ const handler = (route, options = {}) => async (request, reply) => {
     // Show GraphiQL if we can
     if (showGraphiQL) {
       const { query, variables } = params;
-      console.log('graphiql', renderGraphiQL);
       return reply(renderGraphiQL({ query, variables, result }));
     }
 
