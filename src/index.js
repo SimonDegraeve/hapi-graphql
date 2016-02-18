@@ -8,6 +8,7 @@ import {graphql} from 'graphql';
 import {formatError} from 'graphql/error';
 import {version} from '../package.json';
 import renderGraphiQL from './renderGraphiQL';
+import accepts from 'accepts';
 
 /**
  * Define constants
