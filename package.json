@@ -1,6 +1,6 @@
 {
   "name": "hapi-graphql",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Create a GraphQL HTTP server with Hapi.",
   "author": "Simon Degraeve <simon.degraeve@gmail.com>",
   "main": "./lib/index.js",
