@@ -123,6 +123,80 @@ const canDisplayGraphiQL = (request, data) => {
   return !raw && accept.type(['json', 'html']) === 'html';
 };
 
+const createResult = async ({
+  context,
+  operationName,
+  query,
+  request,
+  rootValue,
+  schema,
+  showGraphiQL,
+  validationRules,
+  variables,
+}) => {
+  // If there is no query, but GraphiQL will be displayed, do not produce
+  // a result, otherwise return a 400: Bad Request.
+  if (!query) {
+    if (showGraphiQL) {
+      return null;
+    }
+    throw Boom.badRequest('Must provide query string.');
+  }
+
+  // GraphQL source.
+  const source = new Source(query, 'GraphQL request');
+
+  // Parse source to AST, reporting any syntax error.
+  let documentAST;
+  try {
+    documentAST = parse(source);
+  } catch (syntaxError) {
+    // Return 400: Bad Request if any syntax errors errors exist.
+    throw Boom.badRequest('Syntax error', [syntaxError]);
+  }
+
+  // Validate AST, reporting any errors.
+  const validationErrors = validate(schema, documentAST, validationRules);
+  if (validationErrors.length > 0) {
+    // Return 400: Bad Request if any validation errors exist.
+    throw Boom.badRequest('Validation error', validationErrors);
+  }
+
+  // Only query operations are allowed on GET requests.
+  if (request.method === 'get') {
+    // Determine if this GET request will perform a non-query.
+    const operationAST = getOperationAST(documentAST, operationName);
+    if (operationAST && operationAST.operation !== 'query') {
+      // If GraphiQL can be shown, do not perform this query, but
+      // provide it to GraphiQL so that the requester may perform it
+      // themselves if desired.
+      if (showGraphiQL) {
+        return null;
+      }
+
+      // Otherwise, report a 405: Method Not Allowed error.
+      throw Boom.methodNotAllowed(
+        `Can only perform a ${operationAST.operation} operation from a POST request.`
+      );
+    }
+  }
+
+  // Perform the execution, reporting any errors creating the context.
+  try {
+    return await execute(
+      schema,
+      documentAST,
+      rootValue,
+      context,
+      variables,
+      operationName
+    );
+  } catch (contextError) {
+    // Return 400: Bad Request if any execution context errors exist.
+    throw Boom.badRequest('Context error', [contextError]);
+  }
+};
+
 
 /**
  * Define handler
@@ -165,70 +239,18 @@ const handler = (route, options = {}) => async (request, reply) => {
     // Get GraphQL params from the request and POST body data.
     const { query, variables, operationName } = getGraphQLParams(request, payload);
 
-    // If there is no query, but GraphiQL will be displayed, do not produce
-    // a result, otherwise return a 400: Bad Request.
-    if (!query) {
-      if (showGraphiQL) {
-        reply(renderGraphiQL({ query, variables, operationName })).type('text/html');
-        return;
-      }
-      throw Boom.badRequest('Must provide query string.');
-    }
-
-    // GraphQL source.
-    const source = new Source(query, 'GraphQL request');
-
-    // Parse source to AST, reporting any syntax error.
-    let documentAST;
-    try {
-      documentAST = parse(source);
-    } catch (syntaxError) {
-      // Return 400: Bad Request if any syntax errors errors exist.
-      throw Boom.badRequest('Syntax error', [syntaxError]);
-    }
-
-    // Validate AST, reporting any errors.
-    const validationErrors = validate(schema, documentAST, validationRules);
-    if (validationErrors.length > 0) {
-      // Return 400: Bad Request if any validation errors exist.
-      throw Boom.badRequest('Validation error', validationErrors);
-    }
-
-    // Only query operations are allowed on GET requests.
-    if (request.method === 'get') {
-      // Determine if this GET request will perform a non-query.
-      const operationAST = getOperationAST(documentAST, operationName);
-      if (operationAST && operationAST.operation !== 'query') {
-        // If GraphiQL can be shown, do not perform this query, but
-        // provide it to GraphiQL so that the requester may perform it
-        // themselves if desired.
-        if (showGraphiQL) {
-          reply(renderGraphiQL({ query, variables, operationName })).type('text/html');
-          return;
-        }
-
-        // Otherwise, report a 405: Method Not Allowed error.
-        throw Boom.methodNotAllowed(
-          `Can only perform a ${operationAST.operation} operation from a POST request.`
-        );
-      }
-    }
-
-    // Perform the execution, reporting any errors creating the context.
-    let result;
-    try {
-      result = await execute(
-        schema,
-        documentAST,
-        rootValue,
-        context,
-        variables,
-        operationName
-      );
-    } catch (contextError) {
-      // Return 400: Bad Request if any execution context errors exist.
-      throw Boom.badRequest('Context error', [contextError]);
-    }
+    // Create the result
+    const result = await createResult({
+      context,
+      operationName,
+      query,
+      request,
+      rootValue,
+      schema,
+      showGraphiQL,
+      validationRules,
+      variables,
+    });
 
     // Format any encountered errors.
     if (result && result.errors) {
