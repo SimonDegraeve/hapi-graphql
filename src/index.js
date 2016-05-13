@@ -184,16 +184,14 @@ const handler = (route, options = {}) => async (request, reply) => {
       documentAST = parse(source);
     } catch (syntaxError) {
       // Return 400: Bad Request if any syntax errors errors exist.
-      reply({ errors: [syntaxError].map(errorFormatter) }).code(400);
-      return;
+      throw Boom.badRequest('Syntax error', [syntaxError]);
     }
 
     // Validate AST, reporting any errors.
     const validationErrors = validate(schema, documentAST, validationRules);
     if (validationErrors.length > 0) {
       // Return 400: Bad Request if any validation errors exist.
-      reply({ errors: validationErrors.map(errorFormatter) }).code(400);
-      return;
+      throw Boom.badRequest('Validation error', validationErrors);
     }
 
     // Only query operations are allowed on GET requests.
@@ -229,8 +227,7 @@ const handler = (route, options = {}) => async (request, reply) => {
       );
     } catch (contextError) {
       // Return 400: Bad Request if any execution context errors exist.
-      reply({ errors: [contextError].map(errorFormatter) }).code(400);
-      return;
+      throw Boom.badRequest('Context error', [contextError]);
     }
 
     // Format any encountered errors.
@@ -246,9 +243,10 @@ const handler = (route, options = {}) => async (request, reply) => {
       reply(JSON.stringify(result, null, pretty ? 2 : 0)).type('application/json');
     }
   } catch (error) {
-    // Return error
-    reply({ errors: [error].map(errorFormatter) }).code(500);
-    return;
+    // Return error, picking up Boom overrides
+    const statusCode = error.statusCode || 500;
+    const errors = error.data || [error];
+    reply({ errors: errors.map(errorFormatter) }).code(statusCode);
   }
 };
 
