@@ -27,14 +27,16 @@ server.register({
     query: {
       schema: TestSchema,
       rootValue: {},
-      pretty: false
+      pretty: false,
+      graphiql: true
     },
     // OR
     //
     // query: (request) => {{
     //   schema: TestSchema,
     //   rootValue: {},
-    //   pretty: false
+    //   pretty: false,
+    //   graphiql: true
     // }),
     route: {
       path: '/graphql',
