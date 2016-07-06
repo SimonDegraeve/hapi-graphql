@@ -1,3 +1,15 @@
+// Based on: https://github.com/graphql/express-graphql/blob/master/src/renderGraphiQL.js
+
+/**
+ *  Copyright (c) 2015, Facebook, Inc.
+ *  All rights reserved.
+ *
+ *  This source code is licensed under the BSD-style license found in the
+ *  LICENSE file in the root directory of this source tree. An additional grant
+ *  of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+
 // Current latest version of GraphiQL.
 const GRAPHIQL_VERSION = '0.7.1';
 
@@ -5,6 +17,7 @@ const GRAPHIQL_VERSION = '0.7.1';
 function safeSerialize(data) {
   return data ? JSON.stringify(data).replace(/\//g, '\\/') : null;
 }
+
 
 /**
  * When express-graphql receives a request which does not Accept JSON, but does
