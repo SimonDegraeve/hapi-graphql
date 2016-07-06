@@ -22,9 +22,10 @@
   },
   "devDependencies": {
     "babel": "^5.8.33",
-    "babel-eslint": "^4.1.6",
-    "eslint": "^1.10.3",
-    "eslint-plugin-babel": "^3.0.0",
+    "babel-eslint": "^6.0.4",
+    "eslint": "^2.9.0",
+    "eslint-config-airbnb-base": "^3.0.1",
+    "eslint-plugin-import": "^1.8.0",
     "graphql": "^0.4.14",
     "hapi": "^11.1.2"
   },
@@ -36,5 +37,11 @@
   },
   "peerDependencies": {
     "graphql": "^0.4.14"
+  },
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "extends": [
+      "airbnb-base"
+    ]
   }
 }
