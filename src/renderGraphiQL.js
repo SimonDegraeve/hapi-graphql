@@ -1,13 +1,27 @@
 // Current latest version of GraphiQL.
-const GRAPHIQL_VERSION = '0.4.4';
+const GRAPHIQL_VERSION = '0.7.1';
 
-export default (data) => {
+// Ensures string values are save to be used within a <script> tag.
+function safeSerialize(data) {
+  return data ? JSON.stringify(data).replace(/\//g, '\\/') : null;
+}
+
+/**
+ * When express-graphql receives a request which does not Accept JSON, but does
+ * Accept HTML, it may present GraphiQL, the in-browser GraphQL explorer IDE.
+ *
+ * When shown, it will be pre-populated with the result of having executed the
+ * requested query.
+ */
+export default function renderGraphiQL(data) {
   const queryString = data.query;
-  const variablesString = data.variables
-    ? JSON.stringify(data.variables, null, 2) : null;
-  const resultString = data.result
-    ? JSON.stringify(data.result, null, 2) : null;
+  const variablesString =
+    data.variables ? JSON.stringify(data.variables, null, 2) : null;
+  const resultString =
+    data.result ? JSON.stringify(data.result, null, 2) : null;
+  const operationName = data.operationName;
 
+  /* eslint-disable max-len */
   return `<!--
 The request to this GraphQL server provided the header "Accept: text/html"
 and as a result has been presented GraphiQL - an in-browser IDE for
@@ -18,10 +32,21 @@ add "&raw" to the end of the URL within a browser.
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8" />
+  <title>GraphiQL</title>
+  <meta name="robots" content="noindex" />
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      width: 100%;
+    }
+  </style>
   <link href="//cdn.jsdelivr.net/graphiql/${GRAPHIQL_VERSION}/graphiql.css" rel="stylesheet" />
   <script src="//cdn.jsdelivr.net/fetch/0.9.0/fetch.min.js"></script>
-  <script src="//cdn.jsdelivr.net/react/0.14.2/react.min.js"></script>
-  <script src="//cdn.jsdelivr.net/react/0.14.2/react-dom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/react/15.0.0/react.min.js"></script>
+  <script src="//cdn.jsdelivr.net/react/15.0.0/react-dom.min.js"></script>
   <script src="//cdn.jsdelivr.net/graphiql/${GRAPHIQL_VERSION}/graphiql.min.js"></script>
 </head>
 <body>
@@ -66,7 +91,13 @@ add "&raw" to the end of the URL within a browser.
         body: JSON.stringify(graphQLParams),
         credentials: 'include',
       }).then(function (response) {
-        return response.json();
+        return response.text();
+      }).then(function (responseBody) {
+        try {
+          return JSON.parse(responseBody);
+        } catch (error) {
+          return responseBody;
+        }
       });
     }
     // When the query and variables string is edited, update the URL bar so
@@ -79,22 +110,28 @@ add "&raw" to the end of the URL within a browser.
       parameters.variables = newVariables;
       updateURL();
     }
+    function onEditOperationName(newOperationName) {
+      parameters.operationName = newOperationName;
+      updateURL();
+    }
     function updateURL() {
       history.replaceState(null, null, locationQuery(parameters));
     }
     // Render <GraphiQL /> into the body.
-    React.render(
+    ReactDOM.render(
       React.createElement(GraphiQL, {
         fetcher: graphQLFetcher,
         onEditQuery: onEditQuery,
         onEditVariables: onEditVariables,
-        query: ${JSON.stringify(queryString)},
-        response: ${JSON.stringify(resultString)},
-        variables: ${JSON.stringify(variablesString)}
+        onEditOperationName: onEditOperationName,
+        query: ${safeSerialize(queryString)},
+        response: ${safeSerialize(resultString)},
+        variables: ${safeSerialize(variablesString)},
+        operationName: ${safeSerialize(operationName)},
       }),
       document.body
     );
   </script>
 </body>
 </html>`;
-};
+}
