@@ -17,7 +17,7 @@
     "graphql"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "eslint src",
     "prepublish": "rm -rf lib/* && babel src --out-dir lib"
   },
   "devDependencies": {
