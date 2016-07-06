@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepublish": "babel src --out-dir lib"
+    "prepublish": "rm -rf lib/* && babel src --out-dir lib"
   },
   "devDependencies": {
     "babel": "^5.8.33",
