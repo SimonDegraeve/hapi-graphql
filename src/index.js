@@ -186,12 +186,23 @@ const createResult = async ({
     }
   }
 
+  // Execute rootValue functions if present
+  const executedRootValue = Object.keys(rootValue).reduce((accumulator, rootValueKey) => {
+    const rootValueValue = rootValue[rootValueKey];
+    if (typeof rootValueValue === 'function') {
+      accumulator[rootValueKey] = rootValueValue({}, request);
+    } else {
+      accumulator[rootValueKey] = rootValueValue;
+    }
+    return accumulator;
+  }, {});
+
   // Perform the execution, reporting any errors creating the context.
   try {
     return await execute(
       schema,
       documentAST,
-      rootValue,
+      executedRootValue,
       context,
       variables,
       operationName
