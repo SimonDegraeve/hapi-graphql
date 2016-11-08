@@ -4,6 +4,7 @@
 import Joi from 'joi';
 import Boom from 'boom';
 import { Stream } from 'stream';
+import accepts from 'accepts';
 import {
   Source,
   parse,
@@ -15,7 +16,6 @@ import {
 } from 'graphql';
 import { version } from '../package.json';
 import renderGraphiQL from './renderGraphiQL';
-import accepts from 'accepts';
 
 
 /**
@@ -209,41 +209,41 @@ const createResult = async ({
 const handler = (route, options = {}) => async (request, reply) => {
   let errorFormatter = formatError;
 
+  // Get GraphQL options given this request.
+  const {
+    schema,
+    context,
+    rootValue,
+    pretty,
+    graphiql,
+    formatError: customFormatError,
+    validationRules: additionalValidationRules,
+  } = await getOptions(options, request);
+
+  let validationRules = specifiedRules;
+  if (additionalValidationRules) {
+    validationRules = validationRules.concat(additionalValidationRules);
+  }
+
+  if (customFormatError) {
+    errorFormatter = customFormatError;
+  }
+
+  // GraphQL HTTP only supports GET and POST methods.
+  if ((request.method !== 'get') && (request.method !== 'post')) {
+    throw Boom.methodNotAllowed('GraphQL only supports GET and POST requests.');
+  }
+
+  // Parse payload
+  const payload = await parsePayload(request);
+
+  // Can we show graphiQL?
+  const showGraphiQL = graphiql && canDisplayGraphiQL(request, payload);
+
+  // Get GraphQL params from the request and POST body data.
+  const { query, variables, operationName } = getGraphQLParams(request, payload);
+
   try {
-    // Get GraphQL options given this request.
-    const {
-      schema,
-      context,
-      rootValue,
-      pretty,
-      graphiql,
-      formatError: customFormatError,
-      validationRules: additionalValidationRules,
-    } = await getOptions(options, request);
-
-    let validationRules = specifiedRules;
-    if (additionalValidationRules) {
-      validationRules = validationRules.concat(additionalValidationRules);
-    }
-
-    if (customFormatError) {
-      errorFormatter = customFormatError;
-    }
-
-    // GraphQL HTTP only supports GET and POST methods.
-    if ((request.method !== 'get') && (request.method !== 'post')) {
-      throw Boom.methodNotAllowed('GraphQL only supports GET and POST requests.');
-    }
-
-    // Parse payload
-    const payload = await parsePayload(request);
-
-    // Can we show graphiQL?
-    const showGraphiQL = graphiql && canDisplayGraphiQL(request, payload);
-
-    // Get GraphQL params from the request and POST body data.
-    const { query, variables, operationName } = getGraphQLParams(request, payload);
-
     // Create the result
     const result = await createResult({
       context,
@@ -259,7 +259,8 @@ const handler = (route, options = {}) => async (request, reply) => {
 
     // Format any encountered errors.
     if (result && result.errors) {
-      result.errors = result.errors.map(errorFormatter);
+      result.errors = result.errors.map((err) =>
+        errorFormatter(err, { query, operationName, variables }));
     }
 
     // If allowed to show GraphiQL, present it instead of JSON.
@@ -273,7 +274,8 @@ const handler = (route, options = {}) => async (request, reply) => {
     // Return error, picking up Boom overrides
     const errors = error.data || [error];
     const statusCode = error.output && error.output.statusCode;
-    reply({ errors: errors.map(errorFormatter) }).code(statusCode || 500);
+    reply({ errors: errors.map(err => errorFormatter(err, { query, operationName, variables })) })
+      .code(statusCode || 500);
   }
 };
 
