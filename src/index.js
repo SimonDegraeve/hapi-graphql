@@ -271,7 +271,7 @@ const handler = (route, options = {}) => async (request, reply) => {
     }
   } catch (error) {
     // Return error, picking up Boom overrides
-    const { statusCode = 500 } = error.output;
+    const statusCode = error.output && error.output.statusCode || 500;
     const errors = error.data || [error];
     reply({ errors: errors.map(errorFormatter) }).code(statusCode);
   }
