@@ -26,7 +26,7 @@ function safeSerialize(data) {
  * When shown, it will be pre-populated with the result of having executed the
  * requested query.
  */
-export default function renderGraphiQL(data) {
+module.exports = function renderGraphiQL(data) {
   const queryString = data.query;
   const variablesString =
     data.variables ? JSON.stringify(data.variables, null, 2) : null;
@@ -147,4 +147,4 @@ add "&raw" to the end of the URL within a browser.
   </script>
 </body>
 </html>`;
-}
+};
