@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "description": "Create a GraphQL HTTP server with Hapi.",
   "author": "Simon Degraeve <simon.degraeve@gmail.com>",
-  "main": "./lib/index.js",
+  "main": "./src/index.js",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/SimonDegraeve/hapi-graphql/issues"
@@ -17,32 +17,31 @@
     "graphql"
   ],
   "scripts": {
-    "test": "eslint src",
-    "prepublish": "rm -rf lib/* && babel src --out-dir lib"
+    "test": "eslint src/"
   },
   "devDependencies": {
     "babel-cli": "^6.10.1",
-    "babel-eslint": "^6.1.0",
+    "babel-eslint": "^8.2.2",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-runtime": "^6.9.0",
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-stage-2": "^6.11.0",
     "babel-runtime": "^6.9.2",
-    "eslint": "^3.0.1",
-    "eslint-config-airbnb-base": "^4.0.0",
-    "eslint-plugin-import": "^1.10.2",
-    "graphql": "^0.6.0",
-    "hapi": "^13.5.0"
+    "eslint": "^4.18.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.9.0",
+    "graphql": "^0.13.1",
+    "hapi": "^17.2.0"
   },
   "dependencies": {
     "accepts": "^1.3.3",
     "babel-runtime": "^6.9.2",
-    "boom": "^3.2.2",
-    "joi": "^8.4.2"
+    "boom": "^7.1.1",
+    "joi": "^13.1.2"
   },
   "peerDependencies": {
     "babel-runtime": "^6.9.2",
-    "graphql": "^0.6.0"
+    "graphql": "^0.13.0"
   },
   "eslintConfig": {
     "parser": "babel-eslint",

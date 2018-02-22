@@ -32,7 +32,7 @@ export default function renderGraphiQL(data) {
     data.variables ? JSON.stringify(data.variables, null, 2) : null;
   const resultString =
     data.result ? JSON.stringify(data.result, null, 2) : null;
-  const operationName = data.operationName;
+  const { operationName } = data;
 
   /* eslint-disable max-len */
   return `<!--

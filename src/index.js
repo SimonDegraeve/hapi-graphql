@@ -1,10 +1,10 @@
 /**
  * Import dependencies
  */
-import Joi from 'joi';
-import Boom from 'boom';
-import { Stream } from 'stream';
-import {
+const Joi = require('joi');
+const Boom = require('boom');
+const { Stream } = require('stream');
+const {
   Source,
   parse,
   validate,
@@ -12,11 +12,10 @@ import {
   formatError,
   getOperationAST,
   specifiedRules,
-} from 'graphql';
-import { version } from '../package.json';
-import renderGraphiQL from './renderGraphiQL';
-import accepts from 'accepts';
-
+} = require('graphql');
+const { version } = require('../package.json');
+const renderGraphiQL = require('./renderGraphiQL');
+const accepts = require('accepts');
 
 /**
  * Define constants
@@ -180,9 +179,7 @@ const createResult = async ({
       }
 
       // Otherwise, report a 405: Method Not Allowed error.
-      throw Boom.methodNotAllowed(
-        `Can only perform a ${operationAST.operation} operation from a POST request.`
-      );
+      throw Boom.methodNotAllowed(`Can only perform a ${operationAST.operation} operation from a POST request.`);
     }
   }
 
@@ -194,7 +191,7 @@ const createResult = async ({
       rootValue,
       context,
       variables,
-      operationName
+      operationName,
     );
   } catch (contextError) {
     // Return 400: Bad Request if any execution context errors exist.
@@ -206,7 +203,7 @@ const createResult = async ({
 /**
  * Define handler
  */
-const handler = (route, options = {}) => async (request, reply) => {
+const handler = (route, options = {}) => async (request, h) => {
   let errorFormatter = formatError;
 
   try {
@@ -264,16 +261,25 @@ const handler = (route, options = {}) => async (request, reply) => {
 
     // If allowed to show GraphiQL, present it instead of JSON.
     if (showGraphiQL) {
-      reply(renderGraphiQL({ query, variables, operationName, result })).type('text/html');
+      return h
+        .response(
+          renderGraphiQL({
+            query, variables, operationName, result,
+          }))
+        .type('text/html');
     } else {
       // Otherwise, present JSON directly.
-      reply(JSON.stringify(result, null, pretty ? 2 : 0)).type('application/json');
+      return h
+        .response(JSON.stringify(result, null, pretty ? 2 : 0))
+        .type('application/json');
     }
   } catch (error) {
     // Return error, picking up Boom overrides
     const { statusCode = 500 } = error.output;
     const errors = error.data || [error];
-    reply({ errors: errors.map(errorFormatter) }).code(statusCode);
+    return h
+      .response({ errors: errors.map(errorFormatter) })
+      .code(statusCode);
   }
 };
 
@@ -296,7 +302,7 @@ handler.defaults = (method) => {
 /**
  * Define plugin
  */
-function register(server, options = {}, next) {
+const register = async (server, options = {}) => {
   // Validate options
   const validation = Joi.validate(options, optionsSchema);
   if (validation.error) {
@@ -316,19 +322,16 @@ function register(server, options = {}, next) {
       graphql: query,
     },
   });
+};
 
-  // Done
-  return next();
-}
-
-
-/**
- * Define plugin attributes
- */
-register.attributes = { name: 'graphql', version };
-
+const plugin = {
+  register,
+  pkg: version,
+};
 
 /**
  * Export plugin
  */
-export default register;
+module.exports = {
+  plugin,
+};
