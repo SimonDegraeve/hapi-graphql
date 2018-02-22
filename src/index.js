@@ -262,17 +262,15 @@ const handler = (route, options = {}) => async (request, h) => {
     // If allowed to show GraphiQL, present it instead of JSON.
     if (showGraphiQL) {
       return h
-        .response(
-          renderGraphiQL({
-            query, variables, operationName, result,
-          }))
+        .response(renderGraphiQL({
+          query, variables, operationName, result,
+        }))
         .type('text/html');
-    } else {
-      // Otherwise, present JSON directly.
-      return h
-        .response(JSON.stringify(result, null, pretty ? 2 : 0))
-        .type('application/json');
     }
+    // Otherwise, present JSON directly.
+    return h
+      .response(JSON.stringify(result, null, pretty ? 2 : 0))
+      .type('application/json');
   } catch (error) {
     // Return error, picking up Boom overrides
     const { statusCode = 500 } = error.output;
