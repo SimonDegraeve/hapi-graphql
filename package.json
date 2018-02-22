@@ -42,7 +42,8 @@
     "joi": "^13.1.2"
   },
   "peerDependencies": {
-    "graphql": "^0.13.0"
+    "graphql": "^0.13.0",
+    "hapi": "^17.2.0"
   },
   "eslintConfig": {
     "parser": "babel-eslint",
