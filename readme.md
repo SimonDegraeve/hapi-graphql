@@ -7,22 +7,27 @@ Port from [express-graphql](https://github.com/graphql/express-graphql).
 npm install --save hapi-graphql
 ```
 
+If you are using `yarn`
+
+```js
+yarn add hapi-graphql
+```
+
 ### Example
 
 ```js
-import Hapi from 'hapi';
-import GraphQL from 'hapi-graphql';
-import {GraphQLSchema} from 'graphql';
+const Hapi = require('hapi');
+const GraphQL = require('hapi-graphql');
+const {GraphQLSchema} = require('graphql');
 
-const server = new Hapi.Server();
-server.connection({
+const server = new Hapi.Server({
   port: 3000
 });
 
 const TestSchema = new GraphQLSchema({});
 
-server.register({
-  register: GraphQL,
+await server.register({
+  plugin: GraphQL,
   options: {
     query: {
       # options, see below
@@ -37,11 +42,9 @@ server.register({
       config: {}
     }
   }
-}, () =>
-  server.start(() =>
-    console.log('Server running at:', server.info.uri)
-  )
-);
+});
+await server.start();
+console.log('Server running at:', server.info.uri);
 ```
 
 ### Options
