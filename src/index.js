@@ -13,7 +13,7 @@ const {
   getOperationAST,
   specifiedRules,
 } = require('graphql');
-const { version } = require('../package.json');
+const pkg = require('../package.json');
 const renderGraphiQL = require('./renderGraphiQL');
 const accepts = require('accepts');
 
@@ -311,7 +311,7 @@ const register = async (server, options = {}) => {
   const { route, query } = validation.value;
 
   // Register handler
-  server.handler('graphql', handler);
+  server.decorate('handler', 'graphql', handler);
 
   // Register route
   server.route({
@@ -326,7 +326,7 @@ const register = async (server, options = {}) => {
 
 const plugin = {
   register,
-  pkg: version,
+  pkg,
 };
 
 /**
