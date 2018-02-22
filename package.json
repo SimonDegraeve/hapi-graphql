@@ -5,6 +5,9 @@
   "author": "Simon Degraeve <simon.degraeve@gmail.com>",
   "main": "./src/index.js",
   "license": "MIT",
+  "engines": {
+    "node": ">= 8.9.0"
+  },
   "bugs": {
     "url": "https://github.com/SimonDegraeve/hapi-graphql/issues"
   },
